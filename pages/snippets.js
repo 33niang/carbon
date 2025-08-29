@@ -1,27 +1,31 @@
+// pages/snippets.js
+
 // Theirs
-import React from 'react'
-import Link from 'next/link'
-import Router from 'next/router'
-import formatDistanceToNow from 'date-fns/formatDistanceToNow'
-import { useAsyncCallback } from 'actionsack'
+import React from 'react';
+import Link from 'next/link';
+import Router from 'next/router';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import { useAsyncCallback } from 'actionsack';
+import dynamic from 'next/dynamic'; // 导入 dynamic
 
-import Button from '../components/Button'
-import LoginButton from '../components/LoginButton'
-import ConfirmButton from '../components/ConfirmButton'
-import { MetaLinks } from '../components/Meta'
-import Carbon from '../components/Carbon'
-import Page from '../components/Page'
+// Ours
+import Button from '../components/Button';
+import LoginButton from '../components/LoginButton';
+import ConfirmButton from '../components/ConfirmButton';
+import { MetaLinks } from '../components/Meta';
+import Page from '../components/Page';
+import { useAuth } from '../components/AuthContext';
+import { useAPI } from '../components/ApiContext';
+import { COLORS, DEFAULT_SETTINGS } from '../lib/constants';
 
-import { useAuth } from '../components/AuthContext'
-import { useAPI } from '../components/ApiContext'
-
-import { COLORS, DEFAULT_SETTINGS } from '../lib/constants'
+// 使用 dynamic import 并禁用 SSR
+const Carbon = dynamic(() => import('../components/Carbon'), { ssr: false });
 
 function correctTimestamp(n) {
   if (n < 9e12) {
-    return n * 1000
+    return n * 1000;
   }
-  return n
+  return n;
 }
 
 function Snippet(props) {
@@ -30,7 +34,7 @@ function Snippet(props) {
     ...props,
     fontSize: '2px',
     windowControls: false,
-  }
+  };
 
   return (
     <div className="snippet">
@@ -149,7 +153,7 @@ function Snippet(props) {
         `}
       </style>
     </div>
-  )
+  );
 }
 
 function ActionButton(props) {
@@ -163,41 +167,41 @@ function ActionButton(props) {
       style={{ width: 266, minHeight: 266 }}
       {...props}
     />
-  )
+  );
 }
 
 function useOnMount() {
-  const [mounted, mount] = React.useState(false)
+  const [mounted, mount] = React.useState(false);
   React.useEffect(() => {
-    mount(true)
-  }, [])
+    mount(true);
+  }, []);
 
-  return mounted
+  return mounted;
 }
 
 function SnippetsPage() {
-  const user = useAuth()
-  const api = useAPI()
+  const user = useAuth();
+  const api = useAPI();
 
-  const [snippets, setSnippets] = React.useState([])
-  const [page, setPage] = React.useState(0)
+  const [snippets, setSnippets] = React.useState([]);
+  const [page, setPage] = React.useState(0);
 
-  const mounted = useOnMount()
+  const mounted = useOnMount();
 
-  const [loadMore, { loading, data: previousRes }] = useAsyncCallback(api.snippet.list)
+  const [loadMore, { loading, data: previousRes }] = useAsyncCallback(api.snippet.list);
 
   React.useEffect(() => {
     if (user) {
-      loadMore(page).then(newSnippets => setSnippets(curr => curr.concat(newSnippets)))
+      loadMore(page).then(newSnippets => setSnippets(curr => curr.concat(newSnippets)));
     }
-  }, [loadMore, page, user])
+  }, [loadMore, page, user]);
 
   function deleteSnippet(id) {
-    return api.snippet.delete(id).then(() => setSnippets(curr => curr.filter(s => s.id !== id)))
+    return api.snippet.delete(id).then(() => setSnippets(curr => curr.filter(s => s.id !== id)));
   }
 
   if (!user) {
-    return <LoginButton />
+    return <LoginButton />;
   }
 
   return (
@@ -214,9 +218,9 @@ function SnippetsPage() {
         <ActionButton
           disabled={loading}
           onClick={() => {
-            if (snippets.length) return setPage(p => p + 1)
+            if (snippets.length) return setPage(p => p + 1);
 
-            Router.push('/')
+            Router.push('/');
           }}
         >
           <h4>{loading ? 'Loading…' : !snippets.length ? 'Create snippet +' : 'Load more +'}</h4>
@@ -239,7 +243,7 @@ function SnippetsPage() {
         `}
       </style>
     </div>
-  )
+  );
 }
 
 export default function Snippets() {
@@ -248,5 +252,5 @@ export default function Snippets() {
       <MetaLinks />
       <SnippetsPage />
     </Page>
-  )
+  );
 }
