@@ -11,7 +11,8 @@ import Settings from './Settings'
 import Toolbar from './Toolbar'
 import Overlay from './Overlay'
 import BackgroundSelect from './BackgroundSelect'
-const Carbon = dynamic(() => import('./Carbon'), { ssr: false })import ExportMenu from './ExportMenu';
+const Carbon = dynamic(() => import('./Carbon'), { ssr: false });
+import ExportMenu from './ExportMenu';
 import ShareMenu from './ShareMenu'
 import CopyMenu from './CopyMenu'
 import Themes from './Themes'
