@@ -5,6 +5,7 @@ import { COLORS } from '../lib/constants'
 
 const Footer = () => (
   <footer role="contentinfo" className="mt3">
+    {/* 原有的导航链接 */}
     <nav className="mt3">
       <Link href="/about" prefetch={false}>
         <a className="link" href="/about">
@@ -23,9 +24,9 @@ const Footer = () => (
       <a className="link" href="/offsets">
         offsets
       </a>
-      {/* <span className="new">New</span> */}
     </nav>
 
+    {/* 原作者署名 */}
     <div className="mt2 mb2">
       created by{' '}
       <a className="author-link" href="https://twitter.com/carbon_app">
@@ -33,6 +34,18 @@ const Footer = () => (
       </a>{' '}
       ¬
     </div>
+
+    {/* 您的署名和链接 */}
+    <div className="sansan-credit mt2 mb2">
+      <span>Deployed by sansan</span>
+      <a className="link" href="https://status.zhou.su" target="_blank" rel="noopener noreferrer">
+        状态展示
+      </a>
+      <a className="link" href="https://zhou.su" target="_blank" rel="noopener noreferrer">
+        导航主页
+      </a>
+    </div>
+
     <style jsx>
       {`
         footer {
@@ -57,18 +70,12 @@ const Footer = () => (
           margin-right: 0;
         }
 
-        .new {
-          position: absolute;
-          margin: -4px 0 0 -12px;
-          padding: 1px 3px;
-          color: ${COLORS.SECONDARY};
-          background: #cd3f45; /* COLORS.DARK_RED? */
-          border-radius: 3px;
-          font-size: 8px;
-          font-weight: 600;
-          line-height: 1.3;
-          text-transform: uppercase;
-          user-select: none;
+        .link {
+          color: ${COLORS.PRIMARY};
+          text-decoration: none;
+        }
+        .link:hover {
+          color: #fff;
         }
 
         .author-link {
@@ -78,6 +85,14 @@ const Footer = () => (
 
         .author-link:hover {
           color: #fff;
+        }
+        
+        /* 为您的署名部分添加样式 */
+        .sansan-credit {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 1rem; /* 链接之间的间距 */
         }
       `}
     </style>
