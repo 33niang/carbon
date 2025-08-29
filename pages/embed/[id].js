@@ -6,7 +6,7 @@ import dynamic from 'next/dynamic'; // 导入 dynamic
 
 // Ours
 import Page from '../../components/Page';
-import { MetaLinks } from '../../components-embed/Meta';
+import { MetaLinks } from '../../components/Meta'; // <--- 路径已从 'components-embed' 修正为 'components'
 
 // 使用 dynamic import 并禁用 SSR
 const EditorContainer = dynamic(() => import('../../components/EditorContainer'), {
