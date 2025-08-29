@@ -1,36 +1,50 @@
+// pages/[id].js
+
 import React from 'react'
-import Router from 'next/router'
+import { withRouter } from 'next/router'
+import Either from 'eitherx'
+import dynamic from 'next/dynamic' // 导入 dynamic
 
-import IndexPage from './index'
+// Ours
+import Page from '../components/Page'
+import { MetaLinks } from '../components/Meta'
 
-import api from '../lib/api'
+// 使用 dynamic import 并禁用 SSR
+const EditorContainer = dynamic(() => import('../components/EditorContainer'), {
+  ssr: false,
+})
 
-export async function getServerSideProps({ req, res, query }) {
-  const { id: path, filename } = query
-  const parameter = path.length >= 19 && path.indexOf('.') < 0 ? path : null
-
-  let snippet
-  if (parameter) {
-    const host = req ? req.headers.host : undefined
-    snippet = await api.snippet.get(parameter, { host, filename })
-    if (snippet) {
-      return { props: { snippet, host } }
+class Snippet extends React.Component {
+  static async getInitialProps({ query }) {
+    try {
+      if (query.id) {
+        return { snippet: { id: query.id } }
+      }
+    } catch (e) {
+      console.error(e)
     }
-
-    // 404 Not found
-    if (res) {
-      res.writeHead(302, {
-        Location: '/',
-      })
-      res.end()
-    } else {
-      Router.push('/')
-    }
+    return {}
   }
 
-  return { props: {} }
+  shouldComponentUpdate = () => false
+
+  render() {
+    return (
+      <Page enableHeroText={true} flex={true}>
+        <MetaLinks />
+        <Either>
+          <EditorContainer router={this.props.router} snippet={this.props.snippet} />
+          <p>
+            An unexpected error has occurred. Please{' '}
+            <u>
+              <a href="https://github.com/carbon-app/carbon">file an issue here</a>
+            </u>
+            .
+          </p>
+        </Either>
+      </Page>
+    )
+  }
 }
 
-export default React.memo(function IdPage(props) {
-  return <IndexPage {...props} />
-})
+export default withRouter(Snippet)
