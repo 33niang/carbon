@@ -1,37 +1,45 @@
-import React from 'react'
-import Router from 'next/router'
+// pages/embed/[id].js
 
-import EmbedPage from './index'
+import React from 'react';
+import { withRouter } from 'next/router';
+import dynamic from 'next/dynamic'; // 导入 dynamic
 
-import api from '../../lib/api'
+// Ours
+import Page from '../../components/Page';
+import { MetaLinks } from '../../components-embed/Meta';
 
-export async function getServerSideProps({ req, res, query }) {
-  const { id: path, filename } = query
+// 使用 dynamic import 并禁用 SSR
+const EditorContainer = dynamic(() => import('../../components/EditorContainer'), {
+  ssr: false,
+});
 
-  const parameter = path.length >= 19 && path.indexOf('.') < 0 ? path : null
-
-  let snippet
-  if (parameter) {
-    const host = req ? req.headers.host : undefined
-    snippet = await api.snippet.get(parameter, { host, filename })
-    if (snippet /* && snippet.gist_id */) {
-      return { props: { snippet } }
+class Embed extends React.Component {
+  static async getInitialProps({ query }) {
+    try {
+      if (query.id) {
+        return { snippet: { id: query.id } };
+      }
+    } catch (e) {
+      console.error(e);
     }
-
-    // 404 Not found
-    if (res) {
-      res.writeHead(302, {
-        Location: '/embed',
-      })
-      res.end()
-    } else {
-      Router.push('/embed')
-    }
+    return {};
   }
 
-  return { props: {} }
+  shouldComponentUpdate = () => false;
+
+  render() {
+    return (
+      <Page flex={true}>
+        <MetaLinks />
+        <EditorContainer
+          router={this.props.router}
+          snippet={this.props.snippet}
+          readOnly
+          embed
+        />
+      </Page>
+    );
+  }
 }
 
-export default React.memo(function EmbedIdPage(props) {
-  return <EmbedPage {...props} />
-})
+export default withRouter(Embed);
